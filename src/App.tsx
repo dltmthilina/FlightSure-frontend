@@ -12,6 +12,7 @@ import Airplanes from "./pages/Airplanes";
 import { GuestOnly } from "./components/auth/GuestOnly";
 import Flights from "./pages/flights";
 import Users from "./pages/users/Users";
+import RegisterPage from "./pages/RegisterPage";
 
 const SearchResultsPage = lazy(() => import("./pages/SearchResultsPage"));
 const FlightDetailsPage = lazy(() => import("./pages/FlightDetailsPage"));
@@ -35,6 +36,7 @@ function App() {
             <Routes>
               <Route element={<GuestOnly />}>
                 <Route path="/" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
               </Route>
 
               <Route

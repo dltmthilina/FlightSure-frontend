@@ -11,11 +11,9 @@ import useApi from "../hooks/use-api";
 import { LoginResponse } from "../types/auth";
 import { UserType } from "../types";
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/";
   const [loginError, setLoginError] = useState<string | null>(null);
   const api = useApi();
 
@@ -38,12 +36,13 @@ const LoginPage = () => {
     onSubmit: async (values) => {
       setLoginError(null);
 
-      const res = await api.post<LoginResponse>("auth/login", values, {
-        onSuccessMessage: "Login successfully",
-        onErrorMessage: "Login failed",
+      const res = await api.post<LoginResponse>("auth/register", values, {
+        onSuccessMessage: "User register successfully",
+        onErrorMessage: "User register failed",
         isSilent: false,
       });
       if (res) {
+        console.log(res);
         login(res);
         switch (res.user.role) {
           case UserType.Admin:
@@ -68,10 +67,8 @@ const LoginPage = () => {
         <div className="max-w-md mx-auto">
           <Card className="p-8">
             <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Welcome Back
-              </h1>
-              <p className="text-gray-600">Sign in to access your account</p>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome</h1>
+              <p className="text-gray-600">Sign up with email</p>
             </div>
 
             {loginError && (
@@ -116,32 +113,6 @@ const LoginPage = () => {
                 }
               />
 
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                  />
-                  <label
-                    htmlFor="remember-me"
-                    className="ml-2 block text-sm text-gray-700"
-                  >
-                    Remember me
-                  </label>
-                </div>
-
-                <div className="text-sm">
-                  <a
-                    href="#"
-                    className="font-medium text-primary hover:text-primary-dark"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
-              </div>
-
               <Button
                 type="submit"
                 variant="primary"
@@ -149,18 +120,18 @@ const LoginPage = () => {
                 isLoading={false}
                 disabled={false}
               >
-                Sign In
+                Sign Up
               </Button>
             </form>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                Don't have an account?{" "}
+                Do have an account?{" "}
                 <Link
-                  to={`/register`}
+                  to={`/`}
                   className="font-medium text-primary hover:text-primary-dark"
                 >
-                  Sign up
+                  Sign In
                 </Link>
               </p>
             </div>
@@ -231,4 +202,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
