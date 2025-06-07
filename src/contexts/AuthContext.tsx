@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, ReactNode } from "react";
-import { LoginResponse, User } from "../types/auth";
+import { LoginResponse } from "../types/auth";
+import { User } from "../types";
 
 interface AuthContextType {
   isAuthenticated: boolean;
