@@ -1,10 +1,10 @@
-export interface User {
+import { User } from "./index";
+
+export interface UserAuth {
   userId: number;
-  name: string;
   email: string;
   password: string | null;
   role: string;
-  status: string;
 }
 
 export interface LoginResponse {

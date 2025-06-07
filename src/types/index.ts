@@ -4,6 +4,11 @@ export enum UserType {
   Operator = "OPERATOR",
 }
 
+export enum UserStatus {
+  Active = "ACTIVE",
+  Inactive = "INACTIVE",
+}
+
 export interface User {
   id: string;
   firstName: string;
@@ -13,6 +18,7 @@ export interface User {
   role: UserType;
   passportNumber?: string;
   nationality?: string;
+  status: UserStatus;
   createdAt: string;
 }
 

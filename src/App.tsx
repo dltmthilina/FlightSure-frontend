@@ -10,6 +10,8 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import Airports from "./pages/Airports";
 import Airplanes from "./pages/Airplanes";
 import { GuestOnly } from "./components/auth/GuestOnly";
+import Flights from "./pages/flights";
+import Users from "./pages/users/Users";
 
 const SearchResultsPage = lazy(() => import("./pages/SearchResultsPage"));
 const FlightDetailsPage = lazy(() => import("./pages/FlightDetailsPage"));
@@ -49,6 +51,8 @@ function App() {
                   />
                   <Route path="/airports" element={<Airports />} />
                   <Route path="/airplanes" element={<Airplanes />} />
+                  <Route path="/flights" element={<Flights />} />
+                  <Route path="/users" element={<Users />} />
                 </Route>
               </Route>
             </Routes>
