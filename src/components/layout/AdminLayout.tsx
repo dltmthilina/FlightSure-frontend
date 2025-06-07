@@ -4,9 +4,9 @@ import { NavLink } from "react-router-dom";
 const AdminLayout: React.FC = () => {
   const menuItems = [
     { name: "Dashboard", path: "/admin" },
-    { name: "Airports", path: "/admin/airports" },
-    { name: "Airplanes", path: "/admin/airplanes" },
-    { name: "Flights", path: "/admin/flights" },
+    { name: "Airports", path: "/airports" },
+    { name: "Airplanes", path: "/airplanes" },
+    { name: "Flights", path: "/flights" },
   ];
 
   return (

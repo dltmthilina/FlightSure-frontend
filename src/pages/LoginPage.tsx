@@ -9,22 +9,16 @@ import Input from "../components/common/Input";
 import Card from "../components/common/Card";
 import useApi from "../hooks/use-api";
 import { LoginResponse } from "../types/auth";
+import { UserType } from "../types";
 
 const LoginPage = () => {
-  const { login, isAuthenticated } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
   const [loginError, setLoginError] = useState<string | null>(null);
   const api = useApi();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate(redirect);
-    }
-  }, [isAuthenticated, navigate, redirect]);
-
-  // Validation schema
   const validationSchema = Yup.object({
     email: Yup.string()
       .email("Invalid email address")
@@ -51,6 +45,19 @@ const LoginPage = () => {
       });
       if (res) {
         login(res);
+        switch (res.user.role) {
+          case UserType.Admin:
+            navigate("/admin");
+            break;
+          case UserType.Customer:
+            navigate("/customer");
+            break;
+          case UserType.Operator:
+            navigate("/operator");
+            break;
+          default:
+            navigate("/");
+        }
       }
     },
   });
