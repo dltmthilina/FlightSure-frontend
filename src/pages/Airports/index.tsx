@@ -1,23 +1,23 @@
+import { useEffect, useState } from "react";
 import AirportsTable from "../../components/airport/AirportTable";
 import CreateAirportModal from "../../components/airport/CreateAirportModal";
-
-const dummyAirports = [
-  {
-    code: "CMB",
-    name: "Bandaranaike International",
-    city: "Colombo",
-    country: "Sri Lanka",
-  },
-  {
-    code: "JFK",
-    name: "John F. Kennedy International",
-    city: "New York",
-    country: "USA",
-  },
-  { code: "LHR", name: "Heathrow", city: "London", country: "UK" },
-];
+import useApi from "../../hooks/use-api";
+import { Airport } from "../../types";
 
 const Airports = () => {
+  const api = useApi();
+  const [airPorts, setAirports] = useState<Airport[]>();
+
+  useEffect(() => {
+    getAirports();
+  }, []);
+
+  const getAirports = async () => {
+    const res = await api.get(`/airports`);
+    if (Array.isArray(res)) {
+      setAirports(res);
+    }
+  };
   const handleView = (airport: any) => {
     console.log("View", airport);
   };
@@ -37,7 +37,7 @@ const Airports = () => {
       </div>
 
       <AirportsTable
-        airports={dummyAirports}
+        airports={airPorts ?? []}
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
