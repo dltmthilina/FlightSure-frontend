@@ -33,7 +33,7 @@ const Airports = () => {
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">Airports</h1>
-        <CreateAirportModal />
+        <CreateAirportModal callback={getAirports} />
       </div>
 
       <AirportsTable

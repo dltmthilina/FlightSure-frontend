@@ -13,17 +13,23 @@ const AirportSchema = Yup.object().shape({
   country: Yup.string().required("Country is required"),
 });
 
-const CreateAirportModal: React.FC = () => {
+type ModalProps = {
+  callback: () => void;
+};
+
+const CreateAirportModal = ({ callback }: ModalProps) => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
   const api = useApi();
 
   const handleSubmit = async (values: any, { resetForm }: any) => {
     console.log("Submitted Airport:", values);
-    await api.post("/airports", values, {
-      onErrorMessage: "Failed to create airport",
-      onSuccessMessage: "Airport created successfully",
-    });
+    await api
+      .post("/airports", values, {
+        onErrorMessage: "Failed to create airport",
+        onSuccessMessage: "Airport created successfully",
+      })
+      .then(() => callback());
     resetForm();
     setVisible(false);
   };
