@@ -1,3 +1,5 @@
+import { string } from "yup";
+
 export enum UserType {
   Admin = "ADMIN",
   Customer = "CUSTOMER",
@@ -128,6 +130,16 @@ export interface PaymentMethod {
   cardNumber?: string;
   expiryDate?: string;
   cardHolderName?: string;
+}
+
+export interface Airplane {
+  regNumber: string;
+  model: string;
+  category: string;
+  capacityBusiness: number;
+  capacityEconomy: number;
+  capacityFirst: number;
+  manufacturer: string;
 }
 
 export interface Payment {

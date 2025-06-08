@@ -1,25 +1,23 @@
+import { useEffect, useState } from "react";
 import AirplanesTable from "../../components/airplane/AirplanesTable";
-
-const sampleAirplanes = [
-  {
-    model: "A380",
-    category: "Large",
-    capacity_first: 14,
-    capacity_business: 76,
-    capacity_economy: 400,
-    manufacturer: "Airbus",
-  },
-  {
-    model: "Boeing 777",
-    category: "Medium",
-    capacity_first: 8,
-    capacity_business: 48,
-    capacity_economy: 300,
-    manufacturer: "Boeing",
-  },
-];
+import CreateAirplaneModal from "../../components/airplane/CreateAirplaneModal";
+import useApi from "../../hooks/use-api";
+import { Airplane } from "../../types";
 
 const Airplanes = () => {
+  const api = useApi();
+  const [airPlanes, setAirPlanes] = useState<Airplane[]>([]);
+
+  useEffect(() => {
+    getAirplanes();
+  }, []);
+
+  const getAirplanes = async () => {
+    const res: any = await api.get("/airplanes");
+    if (Array.isArray(res.data)) {
+      setAirPlanes(res.data);
+    }
+  };
   const handleView = (airport: any) => {
     console.log("View", airport);
   };
@@ -33,9 +31,13 @@ const Airplanes = () => {
   };
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-2xl font-bold text-gray-800 mb-4">Airplanes</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-800 mb-4">Airplanes</h1>
+        <CreateAirplaneModal callback={getAirplanes} />
+      </div>
+
       <AirplanesTable
-        airplanes={sampleAirplanes}
+        airplanes={airPlanes ?? []}
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}

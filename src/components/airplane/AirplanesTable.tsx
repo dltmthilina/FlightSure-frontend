@@ -1,15 +1,7 @@
 import React from "react";
 import { Table, Dropdown, Button } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
-
-interface Airplane {
-  model: string;
-  category: string;
-  capacity_first: number;
-  capacity_business: number;
-  capacity_economy: number;
-  manufacturer: string;
-}
+import { Airplane } from "../../types";
 
 interface Props {
   airplanes: Airplane[];
@@ -18,8 +10,18 @@ interface Props {
   onDelete: (airplane: Airplane) => void;
 }
 
-const AirplanesTable: React.FC<Props> = ({ airplanes, onView, onEdit, onDelete }) => {
+const AirplanesTable: React.FC<Props> = ({
+  airplanes,
+  onView,
+  onEdit,
+  onDelete,
+}) => {
   const columns = [
+    {
+      title: "Register Number",
+      dataIndex: "regNumber",
+      key: "regNumber",
+    },
     {
       title: "Model",
       dataIndex: "model",
@@ -32,20 +34,20 @@ const AirplanesTable: React.FC<Props> = ({ airplanes, onView, onEdit, onDelete }
     },
     {
       title: "First Class",
-      dataIndex: "capacity_first",
-      key: "capacity_first",
+      dataIndex: "capacityFirst",
+      key: "capacityFirst",
       align: "right" as const,
     },
     {
       title: "Business",
-      dataIndex: "capacity_business",
-      key: "capacity_business",
+      dataIndex: "capacityBusiness",
+      key: "capacityBusiness",
       align: "right" as const,
     },
     {
       title: "Economy",
-      dataIndex: "capacity_economy",
-      key: "capacity_economy",
+      dataIndex: "capacityEconomy",
+      key: "capacityEconomy",
       align: "right" as const,
     },
     {
