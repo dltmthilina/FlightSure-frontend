@@ -1,9 +1,15 @@
 import React, { useState } from "react";
-import { Modal, Button, Form as AntForm, message, Form } from "antd";
+import { Modal, Button, Form as AntForm, message, Form, Select } from "antd";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import CommonTextInput from "../common/CommonTextInput";
 import useApi from "../../hooks/use-api";
+import timezones from "timezones-list";
+
+const timezoneOptions = timezones.map((tz) => ({
+  label: tz.label, // e.g., "(UTC+05:30) Asia/Colombo"
+  value: tz.tzCode, // e.g., "Asia/Colombo"
+}));
 
 // Validation schema
 const AirportSchema = Yup.object().shape({
@@ -11,6 +17,7 @@ const AirportSchema = Yup.object().shape({
   name: Yup.string().required("Airport name is required"),
   city: Yup.string().required("City is required"),
   country: Yup.string().required("Country is required"),
+  timeZone: Yup.string().required("Time zone is required"),
 });
 
 type ModalProps = {
@@ -45,7 +52,13 @@ const CreateAirportModal = ({ callback }: ModalProps) => {
       </Button>
 
       <Formik
-        initialValues={{ code: "", name: "", city: "", country: "" }}
+        initialValues={{
+          code: "",
+          name: "",
+          city: "",
+          country: "",
+          timeZone: "",
+        }}
         validationSchema={AirportSchema}
         onSubmit={handleSubmit}
       >
@@ -58,6 +71,7 @@ const CreateAirportModal = ({ callback }: ModalProps) => {
           touched,
           resetForm,
           values,
+          setFieldValue,
         }) => {
           const handleClose = () => {
             resetForm(); // Reset Formik state
@@ -114,6 +128,30 @@ const CreateAirportModal = ({ callback }: ModalProps) => {
                     helperText={touched.country ? errors.country : undefined}
                     onBlur={handleBlur}
                   />
+                </AntForm.Item>
+                <AntForm.Item label="Time zone">
+                  <Select
+                    value={values.timeZone}
+                    onChange={(val) => setFieldValue("timeZone", val)}
+                    onBlur={handleBlur}
+                    placeholder="Select airport time zone"
+                  >
+                    {timezoneOptions.map((tz) => (
+                      <Select.Option
+                        key={tz.value}
+                        value={tz.value}
+                        label={tz.label}
+                      >
+                        {tz.label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+
+                  {touched.timeZone && errors.timeZone && (
+                    <div className="text-red-600 text-sm mt-1">
+                      {errors.timeZone}
+                    </div>
+                  )}
                 </AntForm.Item>
 
                 <div style={{ textAlign: "right" }}>

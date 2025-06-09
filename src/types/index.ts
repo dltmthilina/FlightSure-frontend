@@ -34,6 +34,7 @@ export interface Airport {
   name: string;
   city: string;
   country: string;
+  timeZone: string;
 }
 
 export interface Airline {
@@ -49,7 +50,7 @@ export interface FlightClass {
   availableSeats: number;
 }
 
-export interface Flight {
+/* export interface Flight {
   id: string;
   flightNumber: string;
   airline: Airline;
@@ -70,6 +71,15 @@ export interface Flight {
     | "IN_AIR"
     | "LANDED"
     | "DIVERTED";
+} */
+
+export interface Flight {
+  flightNo: string;
+  origin: string;
+  destination: string;
+  departureTime: string; // ISO 8601 format e.g., "2025-06-08T14:30:00Z"
+  arrivalTime: string; // ISO 8601 format
+  airplaneRegNumber: string;
 }
 
 // Booking types
@@ -133,6 +143,7 @@ export interface PaymentMethod {
 }
 
 export interface Airplane {
+  airplaneId: number | string;
   regNumber: string;
   model: string;
   category: string;

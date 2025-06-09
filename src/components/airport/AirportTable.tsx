@@ -1,13 +1,7 @@
 import React from "react";
 import { Table, Dropdown, Button, Space, Menu } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
-
-interface Airport {
-  code: string;
-  name: string;
-  city: string;
-  country: string;
-}
+import { Airport } from "../../types";
 
 interface Props {
   airports: Airport[];
@@ -42,6 +36,11 @@ const AirportsTable: React.FC<Props> = ({
       title: "Country",
       dataIndex: "country",
       key: "country",
+    },
+    {
+      title: "Time Zone",
+      dataIndex: "timeZone",
+      key: "timeZone",
     },
     {
       title: "Actions",
