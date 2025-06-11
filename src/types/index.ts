@@ -30,6 +30,7 @@ export interface AuthUser extends User {
 
 // Flight types
 export interface Airport {
+  airportId: string;
   code: string;
   name: string;
   city: string;

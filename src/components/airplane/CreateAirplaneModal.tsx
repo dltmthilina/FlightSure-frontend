@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Form as AntForm, Select, message, Form } from "antd";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import CommonTextInput from "../common/CommonTextInput";
 import useApi from "../../hooks/use-api";
+import { Airport } from "../../types";
 
 const { Option } = Select;
 
@@ -22,6 +23,7 @@ const AirplaneSchema = Yup.object().shape({
     .typeError("Must be a number")
     .min(0)
     .required("Economy capacity is required"),
+  initialLocation: Yup.string().required("Initial location is required"),
   manufacturer: Yup.string().required("Manufacturer is required"),
 });
 
@@ -31,8 +33,20 @@ type ModalProps = {
 
 const CreateAirplaneModal = ({ callback }: ModalProps) => {
   const [visible, setVisible] = useState(false);
+  const [airports, setAirports] = useState<Airport[]>([]);
   const [form] = Form.useForm();
   const api = useApi();
+
+  useEffect(() => {
+    getAirports();
+  }, []);
+
+  const getAirports = async () => {
+    const res = await api.get(`/airports`);
+    if (Array.isArray(res)) {
+      setAirports(res);
+    }
+  };
 
   const handleSubmit = async (values: any, { resetForm }: any) => {
     console.log(values);
@@ -65,6 +79,7 @@ const CreateAirplaneModal = ({ callback }: ModalProps) => {
           capacityBusiness: "",
           capacityFirst: "",
           capacityEconomy: "",
+          initialLocation: "",
           manufacturer: "",
         }}
         validationSchema={AirplaneSchema}
@@ -173,6 +188,28 @@ const CreateAirplaneModal = ({ callback }: ModalProps) => {
                     }
                     onBlur={handleBlur}
                   />
+                </AntForm.Item>
+
+                <AntForm.Item label="Initial Location">
+                  <Select
+                    value={values.initialLocation}
+                    onChange={(val) => {
+                      setFieldValue("initialLocation", val);
+                    }}
+                    onBlur={handleBlur}
+                    placeholder="Select airplane initial location"
+                  >
+                    {airports.map((airport) => (
+                      <Option key={airport.code} value={airport.airportId}>
+                        {airport.name}
+                      </Option>
+                    ))}
+                  </Select>
+                  {touched.initialLocation && errors.initialLocation && (
+                    <div className="text-red-600 text-sm mt-1">
+                      {errors.initialLocation}
+                    </div>
+                  )}
                 </AntForm.Item>
 
                 <AntForm.Item label="Manufacturer">

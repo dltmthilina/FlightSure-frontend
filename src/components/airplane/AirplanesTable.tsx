@@ -51,6 +51,12 @@ const AirplanesTable: React.FC<Props> = ({
       align: "right" as const,
     },
     {
+      title: "Initial Location",
+      dataIndex: "initialLocation",
+      key: "initialLocation",
+      align: "right" as const,
+    },
+    {
       title: "Manufacturer",
       dataIndex: "manufacturer",
       key: "manufacturer",
