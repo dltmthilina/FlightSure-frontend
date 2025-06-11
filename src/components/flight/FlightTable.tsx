@@ -1,16 +1,7 @@
 import React from "react";
 import { Table, Dropdown, Button } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
-
-interface Flight {
-  flightId: number;
-  flightNumber: string;
-  origin: string;
-  destination: string;
-  departureTime: string;
-  arrivalTime: string;
-  airplaneId: number;
-}
+import { Flight } from "../../types";
 
 interface Props {
   flights: Flight[];
@@ -52,9 +43,10 @@ const FlightTable: React.FC<Props> = ({
       key: "arrivalTime",
     },
     {
-      title: "Airplane ID",
-      dataIndex: "airplaneId",
-      key: "airplaneId",
+      title: "Airplane Register Number",
+      dataIndex: "regNumber",
+      key: "regNumber",
+      render: (_: any, record: Flight) => record.airplane?.regNumber || "-",
       align: "right" as const,
     },
     {
@@ -89,6 +81,8 @@ const FlightTable: React.FC<Props> = ({
       ),
     },
   ];
+
+  console.log(flights);
 
   return (
     <Table

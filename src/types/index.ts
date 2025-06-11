@@ -74,12 +74,12 @@ export interface FlightClass {
 } */
 
 export interface Flight {
-  flightNo: string;
+  flightNumber: string;
   origin: string;
   destination: string;
   departureTime: string; // ISO 8601 format e.g., "2025-06-08T14:30:00Z"
   arrivalTime: string; // ISO 8601 format
-  airplaneRegNumber: string;
+  airplane: Airplane;
 }
 
 // Booking types
