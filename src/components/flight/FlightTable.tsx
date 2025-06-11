@@ -82,8 +82,6 @@ const FlightTable: React.FC<Props> = ({
     },
   ];
 
-  console.log(flights);
-
   return (
     <Table
       rowKey="flightId"

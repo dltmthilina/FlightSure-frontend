@@ -46,8 +46,6 @@ const CreateFlightModal = ({ airportList, callback, airplaneList }: Props) => {
   const [form] = Form.useForm();
   const api = useApi();
 
-  console.log(selectedTimezones);
-
   const handleSubmit = async (values: any, { resetForm }: any) => {
     await api
       .post("/flights", values, {
