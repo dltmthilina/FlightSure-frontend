@@ -151,7 +151,12 @@ export interface Airplane {
   capacityBusiness: number;
   capacityEconomy: number;
   capacityFirst: number;
+  initialLocationId: string;
   manufacturer: string;
+}
+
+export interface AirplaneWithLocation extends Airplane {
+  initialLocation: Airport;
 }
 
 export interface Payment {
@@ -166,3 +171,8 @@ export interface Payment {
 }
 
 export type NotificationType = "success" | "error";
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+}
