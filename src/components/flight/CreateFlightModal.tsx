@@ -129,7 +129,7 @@ const CreateFlightModal = ({ airportList, callback, airplaneList }: Props) => {
                     value={values.origin}
                     onChange={(val) => {
                       const selectedAirport = airportList.find(
-                        (a) => a.code === val
+                        (a) => a.airportId === val
                       );
                       setSelectedTimeZones((pre) => ({
                         ...pre,
@@ -143,7 +143,7 @@ const CreateFlightModal = ({ airportList, callback, airplaneList }: Props) => {
                     {airportList
                       .filter((airport) => airport.code !== values.destination)
                       .map((airport) => (
-                        <Option key={airport.code} value={airport.code}>
+                        <Option key={airport.code} value={airport.airportId}>
                           {airport.name}
                         </Option>
                       ))}
@@ -160,7 +160,7 @@ const CreateFlightModal = ({ airportList, callback, airplaneList }: Props) => {
                     value={values.destination}
                     onChange={(val) => {
                       const selectedAirport = airportList.find(
-                        (a) => a.code === val
+                        (a) => a.airportId === val
                       );
                       setSelectedTimeZones((pre) => ({
                         ...pre,
@@ -174,7 +174,7 @@ const CreateFlightModal = ({ airportList, callback, airplaneList }: Props) => {
                     {airportList
                       .filter((airport) => airport.code !== values.origin)
                       .map((airport) => (
-                        <Option key={airport.code} value={airport.code}>
+                        <Option key={airport.code} value={airport.airportId}>
                           {airport.name}
                         </Option>
                       ))}

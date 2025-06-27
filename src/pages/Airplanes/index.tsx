@@ -66,6 +66,13 @@ const Airplanes = () => {
       render: (_: any, record: AirplaneWithLocation) => record.initialLocation?.name || "-",
       align: "right" as const,
     },
+     {
+      title: "Current Location",
+      dataIndex: "currentLocation",
+      key: "currentLocation",
+      render: (_: any, record: AirplaneWithLocation) => record.currentLocation.name || "-",
+      align: "right" as const,
+    },
     {
       title: "Manufacturer",
       dataIndex: "manufacturer",

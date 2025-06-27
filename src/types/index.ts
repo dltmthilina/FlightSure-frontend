@@ -76,8 +76,10 @@ export interface FlightClass {
 
 export interface Flight {
   flightNumber: string;
-  origin: string;
-  destination: string;
+  originId: string;
+  origin: Airport;
+  destinationId: string;
+  destination: Airport;
   departureTime: string; // ISO 8601 format e.g., "2025-06-08T14:30:00Z"
   arrivalTime: string; // ISO 8601 format
   airplane: Airplane;
@@ -157,6 +159,7 @@ export interface Airplane {
 
 export interface AirplaneWithLocation extends Airplane {
   initialLocation: Airport;
+  currentLocation: Airport;
 }
 
 export interface Payment {
