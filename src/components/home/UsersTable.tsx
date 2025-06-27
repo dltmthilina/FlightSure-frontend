@@ -2,15 +2,16 @@ import React from "react";
 import { Table, Dropdown, Button, Tag } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import { User } from "../../types";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   users: User[];
   onView: (user: User) => void;
-  onEdit: (user: User) => void;
   onDelete: (user: User) => void;
 }
 
-const UsersTable: React.FC<Props> = ({ users, onView, onEdit, onDelete }) => {
+const UsersTable: React.FC<Props> = ({ users, onView, onDelete }) => {
+  const navigate = useNavigate();
   const columns = [
     {
       title: "First Name",
@@ -58,13 +59,9 @@ const UsersTable: React.FC<Props> = ({ users, onView, onEdit, onDelete }) => {
               {
                 key: "view",
                 label: "View",
-                onClick: () => onView(record),
+                onClick: () => navigate(`/users/${record.userId}`),
               },
-              {
-                key: "edit",
-                label: "Update",
-                onClick: () => onEdit(record),
-              },
+
               {
                 key: "delete",
                 label: "Delete",

@@ -13,6 +13,7 @@ import { GuestOnly } from "./components/auth/GuestOnly";
 import Flights from "./pages/flights";
 import Users from "./pages/users/Users";
 import RegisterPage from "./pages/RegisterPage";
+import UserDetail from "./pages/users/UserDetails";
 
 const SearchResultsPage = lazy(() => import("./pages/SearchResultsPage"));
 const FlightDetailsPage = lazy(() => import("./pages/FlightDetailsPage"));
@@ -55,6 +56,7 @@ function App() {
                   <Route path="/airplanes" element={<Airplanes />} />
                   <Route path="/flights" element={<Flights />} />
                   <Route path="/users" element={<Users />} />
+                  <Route path="/users/:userId" element={<UserDetail />} />
                 </Route>
               </Route>
             </Routes>
