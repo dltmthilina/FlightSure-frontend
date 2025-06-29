@@ -22,7 +22,7 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
   }
 
   // Redirect based on user role
-  switch (role) {
+  /*  switch (role) {
     case "ADMIN":
       return <Navigate to="/admin" replace />;
     case "CUSTOMER":
@@ -31,5 +31,5 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
       return <Navigate to="/operator" replace />;
     default:
       return <Navigate to="/" replace />;
-  }
+  } */
 };

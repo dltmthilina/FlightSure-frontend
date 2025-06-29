@@ -19,41 +19,36 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const storedUser = localStorage.getItem("user");
+  const [user, setUser] = useState<User | null>(
+    storedUser ? JSON.parse(storedUser) : null
+  );
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("token") || null
   );
-
-  useEffect(() => {
-    // Check if user is already logged in
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      } catch (err) {
-        console.error("Failed to parse stored user:", err);
-        localStorage.removeItem("user");
-      }
-    }
-  }, []);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    localStorage.getItem("isAuthenticated") === "true"
+  );
 
   const login = async (loginResponse: LoginResponse) => {
+    setIsAuthenticated(true);
     setToken(loginResponse.token);
     setUser(loginResponse.user);
     localStorage.setItem("user", JSON.stringify(loginResponse.user));
     localStorage.setItem("token", loginResponse.token);
+    localStorage.setItem("isAuthenticated", "true");
   };
 
   const logout = () => {
-    setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("token");
   };
 
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated: !!user,
+        isAuthenticated,
         user,
         login,
         logout,
