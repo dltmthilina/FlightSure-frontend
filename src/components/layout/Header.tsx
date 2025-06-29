@@ -38,16 +38,6 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* Desktop Menu */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-primary">Home</Link>
-            <Link to="/search" className="text-gray-700 hover:text-primary">Flights</Link>
-            {isAuthenticated && (
-              <Link to="/bookings" className="text-gray-700 hover:text-primary">My Bookings</Link>
-            )}
-            <a href="#" className="text-gray-700 hover:text-primary">Support</a>
-          </nav>
-
           {/* Auth Buttons or Profile */}
           <div className="hidden md:flex items-center space-x-4">
             {isAuthenticated ? (
