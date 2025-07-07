@@ -2,6 +2,7 @@ import React from "react";
 import { Table, Dropdown, Button } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 import { Flight } from "../../types";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   flights: Flight[];
@@ -16,6 +17,7 @@ const FlightTable: React.FC<Props> = ({
   onEdit,
   onDelete,
 }) => {
+  const navigate = useNavigate();
   const columns = [
     {
       title: "Flight No",
@@ -60,7 +62,7 @@ const FlightTable: React.FC<Props> = ({
               {
                 key: "view",
                 label: "View",
-                onClick: () => onView(record),
+                onClick: () => navigate(`${record.flightId}`),
               },
               {
                 key: "edit",

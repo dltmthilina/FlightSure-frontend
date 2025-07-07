@@ -16,19 +16,13 @@ import RegisterPage from "./pages/RegisterPage";
 import UserDetail from "./pages/users/UserDetails";
 import OperatorLayout from "./components/layout/OperatorLayout";
 import CustomerLayout from "./components/layout/CustomerLayout";
+import CreateFlightPage from "./pages/flights/CreateFlightPage";
 
 const SearchResultsPage = lazy(() => import("./pages/SearchResultsPage"));
-const FlightDetailsPage = lazy(() => import("./pages/FlightDetailsPage"));
+const FlightDetailsPage = lazy(
+  () => import("./pages/flights/FlightDetailsPage")
+);
 const LoginPage = lazy(() => import("./pages/LoginPage"));
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
 
 function App() {
   return (
@@ -42,13 +36,21 @@ function App() {
         <Route element={<AdminLayout />}>
           <Route path="admin">
             <Route index element={<AdminHomePage />} />
-            <Route path="search" element={<SearchResultsPage />} />
-            <Route path="flight/:flightId" element={<FlightDetailsPage />} />
-            <Route path="airports" element={<Airports />} />
-            <Route path="airplanes" element={<Airplanes />} />
-            <Route path="flights" element={<Flights />} />
-            <Route path="users" element={<Users />} />
-            <Route path="users/:userId" element={<UserDetail />} />
+            <Route path="flights">
+              <Route index element={<Flights />} />
+              <Route path="create-new" element={<CreateFlightPage />} />
+              <Route path=":flightId" element={<FlightDetailsPage />} />
+            </Route>
+            <Route path="airports">
+              <Route index element={<Airports />} />
+            </Route>
+            <Route path="airplanes">
+              <Route index element={<Airplanes />} />
+            </Route>
+            <Route path="users">
+              <Route index element={<Users />} />
+              <Route path="users/:userId" element={<UserDetail />} />
+            </Route>
           </Route>
         </Route>
       </Route>
@@ -67,10 +69,14 @@ function App() {
       {/* Customer routes */}
       <Route element={<ProtectedRoute allowedRoles={[UserType.Customer]} />}>
         <Route element={<CustomerLayout />}>
-          <Route path="search" element={<SearchResultsPage />} />
-          <Route path="flight/:flightId" element={<FlightDetailsPage />} />
-          {/* <Route path="bookings" element={<CustomerBookings />} /> */}
-          {/* Add more customer-only routes here */}
+          <Route path="customer">
+            <Route>
+              <Route path="search" element={<SearchResultsPage />} />
+              <Route path="flight/:flightId" element={<FlightDetailsPage />} />
+              {/* <Route path="bookings" element={<CustomerBookings />} /> */}
+              {/* Add more customer-only routes here */}
+            </Route>
+          </Route>
         </Route>
       </Route>
     </Routes>

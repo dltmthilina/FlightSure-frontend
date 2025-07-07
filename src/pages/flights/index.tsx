@@ -3,17 +3,17 @@ import CreateFlightModal from "../../components/flight/CreateFlightModal";
 import FlightTable from "../../components/flight/FlightTable";
 import useApi from "../../hooks/use-api";
 import { Airplane, Airport, Flight } from "../../types";
+import Button from "../../components/common/Button";
+import { useNavigate } from "react-router-dom";
 
 const Flights = () => {
   const api = useApi();
   const [flights, setFlights] = useState<Flight[]>([]);
-  const [airports, setAirports] = useState<Airport[]>([]);
-  const [airplanes, setAirplanes] = useState<Airplane[]>([]);
+ 
+  const navigate = useNavigate();
 
   useEffect(() => {
     getFlights();
-    getAirports();
-    getAirPlanes();
   }, []);
 
   const getFlights = async () => {
@@ -23,19 +23,6 @@ const Flights = () => {
     }
   };
 
-  const getAirports = async () => {
-    const res: any = await api.get("/airports");
-    if (res && Array.isArray(res)) {
-      setAirports(res);
-    }
-  };
-
-  const getAirPlanes = async () => {
-    const res: any = await api.get("airplanes");
-    if (res && Array.isArray(res.data)) {
-      setAirplanes(res.data);
-    }
-  };
   const handleView = (flight: any) => console.log("View flight", flight);
   const handleEdit = (flight: any) => console.log("Edit flight", flight);
   const handleDelete = (flight: any) => console.log("Delete flight", flight);
@@ -46,11 +33,12 @@ const Flights = () => {
     >
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">Flights</h1>
-        <CreateFlightModal
-          callback={getFlights}
-          airplaneList={airplanes}
-          airportList={airports}
-        />
+        <Button
+          className="bg-primary-dark"
+          onClick={() => navigate("create-new")}
+        >
+          Add New Flight
+        </Button>
       </div>
 
       <FlightTable
