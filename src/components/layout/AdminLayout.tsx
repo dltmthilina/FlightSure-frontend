@@ -18,7 +18,7 @@ const AdminLayout: React.FC = () => {
     <div>
       <Header />
       <div className="flex ">
-        <div className="w-64 h-screen bg-primary-dark text-white p-4">
+        <div className="w-64  bg-primary-dark text-white p-4">
           <h2 className="text-xl font-bold mb-6">Admin Panel</h2>
           <nav className="space-y-2">
             {menuItems.map((item) => (
