@@ -75,6 +75,7 @@ export interface FlightClass {
 } */
 
 export interface Flight {
+  flightId: string;
   flightNumber: string;
   originId: string;
   origin: Airport;
@@ -83,6 +84,33 @@ export interface Flight {
   departureTime: string; // ISO 8601 format e.g., "2025-06-08T14:30:00Z"
   arrivalTime: string; // ISO 8601 format
   airplane: Airplane;
+}
+
+export interface NewFlight {
+  flightId: string;
+  flightNumber: string;
+  airline: string; // or Airline if you want to use the object
+  airplane: string; // or Airplane if you want to use the object
+  origin: string; // or Airport if you want to use the object
+  destination: string; // or Airport if you want to use the object
+  departureTime: string; // ISO 8601 format e.g., "2025-06-08T14:30:00Z"
+  arrivalTime: string; // ISO 8601 format
+  duration: number; // in minutes
+  status: "SCHEDULED" | "DELAYED" | "CANCELLED";
+  economySeats: number;
+  businessSeats: number;
+  firstSeats: number;
+  economyPrice: number;
+  businessPrice: number;
+  firstPrice: number;
+  stops?: FlightStop[];
+}
+
+export interface FlightStop {
+  airport: Airport;
+  arrivalTime: string; // ISO 8601
+  departureTime: string; // ISO 8601
+  stopNumber: number; // Order of the stop
 }
 
 // Booking types
