@@ -1,10 +1,10 @@
 import { Card, Table, Button } from "antd";
 
 const summaryData = [
-  { title: "Total Flights", value: 128, color: "bg-primary-dark" },
-  { title: "Total Bookings", value: 542, color: "bg-blue-600" },
-  { title: "Active Users", value: 312, color: "bg-green-600" },
-  { title: "Airplanes", value: 18, color: "bg-yellow-500" },
+  { title: "Total Flights", value: 5, color: "bg-primary-dark" },
+  { title: "Total Bookings", value: 3, color: "bg-blue-600" },
+  { title: "Active Users", value: 10, color: "bg-green-600" },
+  { title: "Airplanes", value: 10, color: "bg-yellow-500" },
 ];
 
 const recentBookings = [
