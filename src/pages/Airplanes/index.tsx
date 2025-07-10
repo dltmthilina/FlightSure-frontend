@@ -122,6 +122,7 @@ const Airplanes = () => {
       </div>
       <div>
         <Table
+          className="max-h-screen overflow-y-auto"
           rowKey="model"
           dataSource={airPlanes}
           columns={columns}

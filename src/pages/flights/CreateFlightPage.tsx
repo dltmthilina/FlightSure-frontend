@@ -244,7 +244,7 @@ const CreateFlightPage = () => {
                     .filter((airport) => airport.code !== values.destinationId)
                     .map((airport) => (
                       <Option key={airport.code} value={airport.airportId}>
-                        {airport.name}
+                        {airport.name} - {airport.code}
                       </Option>
                     ))}
                 </Select>
@@ -275,7 +275,7 @@ const CreateFlightPage = () => {
                     .filter((airport) => airport.code !== values.originId)
                     .map((airport) => (
                       <Option key={airport.code} value={airport.airportId}>
-                        {airport.name}
+                        {airport.name} - {airport.code}
                       </Option>
                     ))}
                 </Select>

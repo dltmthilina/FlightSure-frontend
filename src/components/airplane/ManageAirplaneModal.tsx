@@ -182,13 +182,20 @@ const ManageAirplaneModal = ({
                   </AntForm.Item>
 
                   <AntForm.Item label="Category">
-                    <CommonTextInput
+                    <Select
                       value={values.category}
-                      onChange={handleChange}
-                      name="category"
-                      helperText={touched.category ? errors.category : undefined}
-                      onBlur={handleBlur}
-                    />
+                      onChange={(val) => {
+                        setFieldValue("category", val);
+                      }}
+                    >
+                      <Select.Option value="small">SMALL</Select.Option>
+                      <Select.Option value="medium">MEDIUM</Select.Option>
+                      <Select.Option value="large">LARGE</Select.Option>
+                    </Select>
+                    {touched.category ? errors.category : undefined}
+                    <div className="text-red-600 text-sm mt-1">
+                      {touched.category && errors.category}
+                    </div>
                   </AntForm.Item>
 
                   <AntForm.Item label="Business Class Capacity">
@@ -236,14 +243,14 @@ const ManageAirplaneModal = ({
 
                   <AntForm.Item label="Initial Location">
                     <Select
-                      value={parseInt(values.initialLocationId) || undefined}
+                      value={values.initialLocationId}
                       onChange={(val) => {
                         setFieldValue("initialLocationId", val);
                       }}
                       onBlur={handleBlur}
                       placeholder="Select airplane initial location"
                       options={airports.map((airport) => ({
-                        label: airport.name,
+                        label: `${airport.name} - ${airport.code}`,
                         value: airport.airportId,
                       }))}
                     />
