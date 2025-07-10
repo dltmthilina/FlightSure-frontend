@@ -30,12 +30,17 @@ const CreateAirportModal = ({ callback }: ModalProps) => {
   const api = useApi();
 
   const handleSubmit = async (values: any, { resetForm }: any) => {
-    console.log("Submitted Airport:", values);
+    const airportId =
+      "AP" + Date.now() + Math.random().toString(36).substr(2, 5);
     await api
-      .post("/airports", values, {
-        onErrorMessage: "Failed to create airport",
-        onSuccessMessage: "Airport created successfully",
-      })
+      .post(
+        "/airports",
+        { ...values, airportId },
+        {
+          onErrorMessage: "Failed to create airport",
+          onSuccessMessage: "Airport created successfully",
+        }
+      )
       .then(() => callback());
     resetForm();
     setVisible(false);

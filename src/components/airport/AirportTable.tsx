@@ -77,6 +77,7 @@ const AirportsTable: React.FC<Props> = ({
 
   return (
     <Table
+      className="max-h-screen overflow-y-auto"
       rowKey="code"
       dataSource={airports}
       columns={columns}

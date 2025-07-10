@@ -30,7 +30,7 @@ const Airports = () => {
     console.log("Delete", airport);
   };
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-gray-50 ">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800 mb-4">Airports</h1>
         <CreateAirportModal callback={getAirports} />
