@@ -6,27 +6,30 @@ import {
   Input,
   Button,
   DatePicker,
-  TimePicker,
   Select,
   InputNumber,
   Card,
 } from "antd";
 import useApi from "../../hooks/use-api";
-import { useNavigate } from "react-router-dom";
-import { calculateDuration, formatMinutesToHours } from "../../utils/common";
+import {
+  calculateDuration,
+  formatMinutesToHours,
+  generateFlightId,
+  generateFlightLegId,
+} from "../../utils/common";
 import { Airplane, Airport, ApiResponse } from "../../types";
+import { airlines } from "../../utils/const";
+import FlightLegsSection from "../../components/flight/FlightLegsSection";
 
 const { Option } = Select;
 
 const FlightSchema = Yup.object().shape({
   flightNumber: Yup.string().required("Flight number is required"),
   airline: Yup.string().required("Airline is required"),
-  airplane: Yup.string().required("Airplane is required"),
-  origin: Yup.string().required("Origin airport is required"),
-  destination: Yup.string().required("Destination airport is required"),
-  departureDate: Yup.string().required("Departure date is required"),
+  airplaneId: Yup.string().required("Airplane is required"),
+  originId: Yup.string().required("Origin airport is required"),
+  destinationId: Yup.string().required("Destination airport is required"),
   departureTime: Yup.string().required("Departure time is required"),
-  arrivalDate: Yup.string().required("Arrival date is required"),
   arrivalTime: Yup.string().required("Arrival time is required"),
   duration: Yup.number()
     .required("Duration is required")
@@ -38,37 +41,91 @@ const FlightSchema = Yup.object().shape({
   economyPrice: Yup.number().required().min(0),
   businessPrice: Yup.number().required().min(0),
   firstPrice: Yup.number().required().min(0),
+  flightLegs: Yup.array()
+    .of(
+      Yup.object().shape({
+        legOriginId: Yup.string().required("Leg origin is required"), // Different field name
+        legDestinationId: Yup.string().required("Leg destination is required"), // Different field name
+        legDepartureTime: Yup.string().required(
+          "Leg departure time is required"
+        ), // Different field name
+        legArrivalTime: Yup.string().required("Leg arrival time is required"), // Different field name
+        transitDuration: Yup.number().min(0, "Must be positive or zero"),
+      })
+    )
+    .test(
+      "flight-legs-consistency",
+      "Flight legs validation failed",
+      function (flightLegs) {
+        const { originId, destinationId } = this.parent;
+        if (!flightLegs || flightLegs.length === 0) {
+          return true; // No legs to validate (direct flight)
+        }
+
+        // 1. First leg origin must match main flight origin
+
+        if (flightLegs[0]?.legOriginId !== originId) {
+          return this.createError({
+            path: "flightLegs[0].legOriginId",
+            message: "First leg origin must match main flight origin",
+          });
+        }
+
+        // 2. Last leg destination must match main flight destination
+        const lastLeg = flightLegs[flightLegs.length - 1];
+        if (lastLeg?.legDestinationId !== destinationId) {
+          return this.createError({
+            path: `flightLegs[${flightLegs.length - 1}].legDestinationId`,
+            message: "Last leg destination must match main flight destination",
+          });
+        }
+
+        // 3. Each leg destination must match next leg origin (for connecting flights)
+        for (let i = 0; i < flightLegs.length - 1; i++) {
+          if (
+            flightLegs[i]?.legDestinationId !== flightLegs[i + 1]?.legOriginId
+          ) {
+            return this.createError({
+              path: `flightLegs[${i + 1}].legOriginId`,
+              message: `Leg ${i + 2} origin must match leg ${
+                i + 1
+              } destination`,
+            });
+          }
+        }
+
+        return true; // All checks passed
+      }
+    ),
 });
 
 const CreateFlightPage = () => {
-    const api = useApi();
-    const navigate = useNavigate();
-    const [airports, setAirports] = useState<Airport[]>([]);
-    const [airplanes, setAirplanes] = useState<Airplane[]>([]);
-     const [selectedTimezones, setSelectedTimeZones] = useState({
-        originTimezone: "",
-        destinationTimezone: "",
-      });
+  const api = useApi();
+  const [airports, setAirports] = useState<Airport[]>([]);
+  const [airplanes, setAirplanes] = useState<Airplane[]>([]);
+  const [selectedTimezones, setSelectedTimeZones] = useState({
+    originTimezone: "",
+    destinationTimezone: "",
+  });
 
-    useEffect(() => {
-        getAirPlanes();
-        getAirports();
-     },[]);
-    
+  useEffect(() => {
+    getAirPlanes();
+    getAirports();
+  }, []);
 
-    const getAirports = async () => {
-      const res: any = await api.get("/airports");
-      if (res && Array.isArray(res)) {
-        setAirports(res);
-      }
-    };
+  const getAirports = async () => {
+    const res: any = await api.get("/airports");
+    if (res && Array.isArray(res)) {
+      setAirports(res);
+    }
+  };
 
-    const getAirPlanes = async () => {
-      const res: any = await api.get("airplanes");
-      if (res && Array.isArray(res.data)) {
-        setAirplanes(res.data);
-      }
-    };
+  const getAirPlanes = async () => {
+    const res: any = await api.get("airplanes");
+    if (res && Array.isArray(res.data)) {
+      setAirplanes(res.data);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50 py-10">
@@ -78,13 +135,12 @@ const CreateFlightPage = () => {
         </h2>
         <Formik
           initialValues={{
+            airline: "",
             flightNumber: "",
             airplaneId: "",
-            origin: "",
-            destination: "",
-            departureDate: "",
+            originId: "",
+            destinationId: "",
             departureTime: "",
-            arrivalDate: "",
             arrivalTime: "",
             duration: 0,
             status: "SCHEDULED",
@@ -94,10 +150,26 @@ const CreateFlightPage = () => {
             economyPrice: 0,
             businessPrice: 0,
             firstPrice: 0,
+            flightLegs: [],
           }}
           validationSchema={FlightSchema}
           onSubmit={async (values, { setSubmitting }) => {
-            await api.post("/flights", values, {
+            const flightId = generateFlightId(values.airline);
+            const flightData = {
+              ...values,
+              flightId,
+              flightLegs: values.flightLegs.map((leg: any, index: number) => ({
+                legId: generateFlightLegId(values.airline),
+                flightId,
+                originId: leg.legOriginId, // Map back to backend field names
+                destinationId: leg.legDestinationId, // Map back to backend field names
+                departureTime: leg.legDepartureTime, // Map back to backend field names
+                arrivalTime: leg.legArrivalTime, // Map back to backend field names
+                legOrder: index + 1,
+                transitDuration: leg.legTransitDuration,
+              })),
+            };
+            await api.post("/flights", flightData, {
               onErrorMessage: "Failed to create flight",
               onSuccessMessage: "Flight created successfully",
             });
@@ -111,9 +183,32 @@ const CreateFlightPage = () => {
             handleBlur,
             setFieldValue,
             isSubmitting,
-            setFieldError,
+            setStatus,
+            status,
           }) => (
             <FormikForm>
+              <Form.Item label="Airline" layout="vertical">
+                <Select
+                  value={values.airline}
+                  onChange={(val) => {
+                    setFieldValue("airline", val);
+                  }}
+                  onBlur={handleBlur}
+                  placeholder="Select airline"
+                >
+                  {airlines.map((airline) => (
+                    <Option key={airline.code} value={airline.code}>
+                      {airline.name} ({airline.code})
+                    </Option>
+                  ))}
+                </Select>
+                {touched.airline && errors.airline && (
+                  <div className="text-red-600 text-sm mt-1">
+                    {errors.airline}
+                  </div>
+                )}
+              </Form.Item>
+
               <Form.Item
                 layout="vertical"
                 label="Flight Number"
@@ -131,7 +226,7 @@ const CreateFlightPage = () => {
               </Form.Item>
               <Form.Item label="Origin" layout="vertical">
                 <Select
-                  value={values.origin}
+                  value={values.originId}
                   onChange={(val) => {
                     const selectedAirport = airports.find(
                       (a) => a.airportId === val
@@ -140,29 +235,29 @@ const CreateFlightPage = () => {
                       ...pre,
                       originTimezone: selectedAirport?.timeZone ?? "",
                     }));
-                    setFieldValue("origin", val);
+                    setFieldValue("originId", val);
                   }}
                   onBlur={handleBlur}
                   placeholder="Select origin airport"
                 >
                   {airports
-                    .filter((airport) => airport.code !== values.destination)
+                    .filter((airport) => airport.code !== values.destinationId)
                     .map((airport) => (
                       <Option key={airport.code} value={airport.airportId}>
                         {airport.name}
                       </Option>
                     ))}
                 </Select>
-                {touched.origin && errors.origin && (
+                {touched.originId && errors.originId && (
                   <div className="text-red-600 text-sm mt-1">
-                    {errors.origin}
+                    {errors.originId}
                   </div>
                 )}
               </Form.Item>
 
               <Form.Item label="Destination" layout="vertical">
                 <Select
-                  value={values.destination}
+                  value={values.destinationId}
                   onChange={(val) => {
                     const selectedAirport = airports.find(
                       (a) => a.airportId === val
@@ -171,63 +266,45 @@ const CreateFlightPage = () => {
                       ...pre,
                       destinationTimezone: selectedAirport?.timeZone ?? "",
                     }));
-                    setFieldValue("destination", val);
+                    setFieldValue("destinationId", val);
                   }}
                   onBlur={handleBlur}
                   placeholder="Select destination airport"
                 >
                   {airports
-                    .filter((airport) => airport.code !== values.origin)
+                    .filter((airport) => airport.code !== values.originId)
                     .map((airport) => (
                       <Option key={airport.code} value={airport.airportId}>
                         {airport.name}
                       </Option>
                     ))}
                 </Select>
-                {touched.destination && errors.destination && (
+                {touched.destinationId && errors.destinationId && (
                   <div className="text-red-600 text-sm mt-1">
-                    {errors.destination}
+                    {errors.destinationId}
                   </div>
                 )}
               </Form.Item>
 
               <Form.Item label="Departure Date & Time" layout="vertical">
                 <DatePicker
+                  showTime
                   className="mr-2"
                   onChange={(_, dateString) => {
-                    setFieldValue("departureDate", dateString);
-                    if (
-                      dateString &&
-                      values.departureTime &&
-                      values.arrivalDate &&
-                      values.arrivalTime
-                    ) {
-                      const dep = `${dateString}T${values.departureTime}`;
-                      const arr = `${values.arrivalDate}T${values.arrivalTime}`;
-                      setFieldValue("duration", calculateDuration(dep, arr));
+                    setFieldValue("departureTime", dateString);
+                    if (dateString && values.arrivalTime) {
+                      setFieldValue(
+                        "duration",
+                        calculateDuration(
+                          Array.isArray(dateString)
+                            ? dateString[0] ?? ""
+                            : dateString,
+                          values.arrivalTime
+                        )
+                      );
                     }
                   }}
                 />
-                <TimePicker
-                  onChange={(_, timeString) => {
-                    setFieldValue("departureTime", timeString);
-                    if (
-                      values.departureDate &&
-                      timeString &&
-                      values.arrivalDate &&
-                      values.arrivalTime
-                    ) {
-                      const dep = `${values.departureDate}T${timeString}`;
-                      const arr = `${values.arrivalDate}T${values.arrivalTime}`;
-                      setFieldValue("duration", calculateDuration(dep, arr));
-                    }
-                  }}
-                />
-                {touched.departureDate && errors.departureDate && (
-                  <div className="text-red-500 text-xs">
-                    {errors.departureDate}
-                  </div>
-                )}
                 {touched.departureTime && errors.departureTime && (
                   <div className="text-red-500 text-xs">
                     {errors.departureTime}
@@ -236,21 +313,22 @@ const CreateFlightPage = () => {
               </Form.Item>
               <Form.Item label="Arrival Date & Time" layout="vertical">
                 <DatePicker
+                  showTime
                   className="mr-2"
-                  onChange={(_, dateString) =>
-                    setFieldValue("arrivalDate", dateString)
-                  }
+                  onChange={(_, dateString) => {
+                    setFieldValue("arrivalTime", dateString);
+                    const arrivalStr = Array.isArray(dateString)
+                      ? dateString[0]
+                      : dateString;
+                    if (arrivalStr && values.departureTime) {
+                      console.log(arrivalStr, values.departureTime);
+                      setFieldValue(
+                        "duration",
+                        calculateDuration(values.departureTime, arrivalStr)
+                      );
+                    }
+                  }}
                 />
-                <TimePicker
-                  onChange={(_, timeString) =>
-                    setFieldValue("arrivalTime", timeString)
-                  }
-                />
-                {touched.arrivalDate && errors.arrivalDate && (
-                  <div className="text-red-500 text-xs">
-                    {errors.arrivalDate}
-                  </div>
-                )}
                 {touched.arrivalTime && errors.arrivalTime && (
                   <div className="text-red-500 text-xs">
                     {errors.arrivalTime}
@@ -275,25 +353,20 @@ const CreateFlightPage = () => {
                 <Select
                   value={values.airplaneId}
                   onChange={async (val) => {
-                    setFieldValue("airplaneId", val);
-                    const res = await api.get<
-                      ApiResponse<{ currentLocationId: String }>
-                    >(`/${val}/current-location?airplaneId=${val}&departureTime=${values.departureTime}`);
-                    if (res?.data.currentLocationId) {
-                      if (res.data.currentLocationId !== val) {
-                        setFieldValue("airplaneId", ""); // Optionally reset selection
-                        // Set error using Formik's setFieldError
-                        if (typeof setFieldError === "function") {
-                          setFieldError(
-                            "airplaneId",
-                            "Selected airplane is not at the flight origin."
-                          );
-                        }
+                    setFieldValue("airplaneId", val.toString());
+                    const res = await api.get<ApiResponse<string>>(
+                      `/flights/${val}/current-location?departureTime=${values.departureTime}`
+                    );
+
+                    if (res?.data) {
+                      console.log(res.data, typeof values.originId);
+                      if (res.data !== values.originId.toString()) {
+                        setStatus({
+                          airplaneId:
+                            "Selected airplane is not at the flight origin.",
+                        });
                       } else {
-                        // Clear error if locations match
-                        if (typeof setFieldError === "function") {
-                          setFieldError("airplaneId", undefined);
-                        }
+                        setStatus("");
                       }
                     }
                   }}
@@ -312,6 +385,11 @@ const CreateFlightPage = () => {
                 {touched.airplaneId && errors.airplaneId && (
                   <div className="text-red-600 text-sm mt-1">
                     {errors.airplaneId}
+                  </div>
+                )}
+                {status?.airplaneId && (
+                  <div className="text-red-600 text-sm mt-1">
+                    {status.airplaneId}
                   </div>
                 )}
               </Form.Item>
@@ -383,8 +461,16 @@ const CreateFlightPage = () => {
                   </div>
                 </div>
               </Form.Item>
+              <FlightLegsSection
+                values={values}
+                errors={errors}
+                touched={touched}
+                setFieldValue={setFieldValue}
+                airports={airports}
+              />
               <Form.Item>
                 <Button
+                  onClick={() => console.log(errors)}
                   type="primary"
                   htmlType="submit"
                   loading={isSubmitting}

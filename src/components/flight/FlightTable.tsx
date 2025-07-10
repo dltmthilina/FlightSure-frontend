@@ -28,13 +28,14 @@ const FlightTable: React.FC<Props> = ({
       title: "Origin",
       dataIndex: "origin",
       key: "origin",
-      render: (_: any, record: Flight) => record.origin.name || "-",
+      render: (_: any, record: Flight) => record.originAirport?.name || "-",
     },
     {
       title: "Destination",
       dataIndex: "destination",
       key: "destination",
-      render: (_: any, record: Flight) => record.destination.name || "-",
+      render: (_: any, record: Flight) =>
+        record.destinationAirport?.name || "-",
     },
     {
       title: "Departure",
